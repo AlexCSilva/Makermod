@@ -21,3 +21,5 @@ struct connectedClients_t
 } cnctClients[MAX_CLIENTS];
 
 #define MAX_NPC_MODELS 14
+
+void MM_GetHostname(gclient_t *client); // SpioR - declaration

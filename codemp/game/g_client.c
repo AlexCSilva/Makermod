@@ -2436,7 +2436,12 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 //	areabits = client->areabits;
 
-	memset( client, 0, sizeof(*client) );
+	{ // SpioR - Scooper's shitty duct tape fix that I will keep because any other methods are even shittier
+		char itsLikeYouDontTrustMe[256];
+		memcpy(itsLikeYouDontTrustMe, client->sess.hostname, sizeof(client->sess.hostname));
+		memset(client, 0, sizeof(*client));
+		memcpy(client->sess.hostname, itsLikeYouDontTrustMe, sizeof(client->sess.hostname));
+	}
 
 	client->pers.connected = CON_CONNECTING;
 
@@ -2469,6 +2474,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 	if (firstTime)
 	{
+
 		for (i = 0; i < MAX_CLIENTS; i++) {
 			if (!Q_stricmp(PortlessIp, cnctClients[i].PortlessIp)) {
 					newIP = qfalse;
@@ -2490,6 +2496,12 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 			cnctClients[i].numClientsFromIP--;
 			return "You have exceeded max amount of simultaneous connections.";
 		}
+
+		// SpioR - Getting their hostname
+		MM_GetHostname(client);
+
+		if (client->sess.hostname[0] == '\0') 
+			return "Authorizing...";
 	}
 		
 
@@ -4212,6 +4224,7 @@ void ClientDisconnect( int clientNum ) {
 	ent->client->pers.connected = CON_DISCONNECTED;
 	ent->client->ps.persistant[PERS_TEAM] = TEAM_FREE;
 	ent->client->sess.sessionTeam = TEAM_FREE;
+	ent->client->sess.hostname[0] = '\0'; // SpioR - this should do the trick (hopefully)
 	ent->r.contents = 0;
 
 	ent->userinfoChanged = 0;

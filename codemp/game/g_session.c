@@ -121,7 +121,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	var = va( "session%i", client - level.clients );
 	trap_Cvar_Set( var, s );
 
-	s2 = va("%s %i %i %i %i %i %i %s %s %s",
+	s2 = va("%s %i %i %i %i %i %i %s %s %s %s",
 		saber2Type,
 //		client->sess.permissions,
 		client->sess.arm,
@@ -131,6 +131,9 @@ void G_WriteClientSessionData( gclient_t *client ) {
 		(int)client->sess.mark[1],
 		(int)client->sess.mark[2],
 		client->sess.ip,
+		client->sess.hostname, // SpioR - adding the hostname to the session data \
+							   			so we don't have to authorize on map change and etc.\
+										(hopefully it fits ;_;)
 		#ifdef RANKINGMOD
 		client->sess.playerUsername,
 		#endif
@@ -227,7 +230,7 @@ void G_ReadSessionData( gclient_t *client, char *md5sum ) {
 		&client->sess.saber2Type
 		);
 
-	sscanf( s2, "%s %i %i %i %f %f %f %s %s %s",
+	sscanf( s2, "%s %i %i %i %f %f %f %s %s %s %s",
 		&client->sess.saber2Type,
 //		&client->sess.permissions,
 		&client->sess.arm,
@@ -237,6 +240,7 @@ void G_ReadSessionData( gclient_t *client, char *md5sum ) {
 		&(client->sess.mark[1]),
 		&(client->sess.mark[2]),
 		&client->sess.ip,
+		&client->sess.hostname, // SpioR - aaand read it here
 		#ifdef RANKINGMOD
 		&client->sess.playerUsername,
 		#endif

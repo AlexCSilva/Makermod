@@ -6682,6 +6682,7 @@ void Cmd_mstatus_f( gentity_t *ent )
 	//		cl->npcCount = 0;
 
 		MM_SendMessage( ent-g_entities, va("print \"%i %-20.20s ^7%-15.15s %-26.26s %2i %13i\n\"", i, buffer, cl->sess.username, cl->sess.ip, cl->npcCount, playerClients[ent-g_entities].version) );
+		MM_SendMessage(ent - g_entities, va("print \"%s\n\"", cl->sess.hostname)); // SpioR - lazy test
 	}
 
 	MM_SendMessage( ent-g_entities, va("print \"\nFree Object Slots: %i  Free NPC Slots: %i  NPCs: %i  NPC models used: %i\n\"", MAX_GENTITIES - (level.entCount + g_objectMargin.integer),(g_npcLimit.integer-level.npcCount), level.npcCount, level.npcTypes) );

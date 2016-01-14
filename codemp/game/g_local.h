@@ -579,6 +579,9 @@ typedef struct {
 	char		password[MAX_PASSWORD_LENGTH + 1];
 	vec3_t		mark;
 	char        ip[MAX_IPSTRING];
+	char		hostname[256]; // SpioR - defining the hostname here.\
+										Also if anyone knows of some macro for max hostname length (in jka/q3)\
+											fix that magic number up there pls (also in mm_hostname.c)
 	char		objectPassword[MAX_PASSWORD_LENGTH + 1];
 	int			touchTimer;
 	int			teleTimer;
