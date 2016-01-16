@@ -1857,6 +1857,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	InitAllPlayerRemaps();
 	// [RemapObject] end
 
+	// SpioR - load hostname cache and jails
+	MM_ReadHostnames();
+	//	MM_ReadJails();
+
 	// let the server system know where the entites are
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ), 
 		&level.clients[0].ps, sizeof( level.clients[0] ) );
@@ -2035,6 +2039,10 @@ void G_ShutdownGame( int restart ) {
 	// Makermod
 	ClearAllPlayerRemaps();
 	// [RemapObject] end
+
+	// SpioR - save hostname cache and jails
+	MM_WriteHostnames();
+//	MM_WriteJails();
 
 //	G_Printf ("==== ShutdownGame ====\n");
 

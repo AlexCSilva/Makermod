@@ -22,4 +22,16 @@ struct connectedClients_t
 
 #define MAX_NPC_MODELS 14
 
-void MM_GetHostname(gclient_t *client); // SpioR - declaration
+ // SpioR - declarations
+void MM_GetHostname(gclient_t *client);
+void MM_ReadHostnames(void);
+void MM_WriteHostnames(void);
+
+typedef struct hostnameCache_s
+{
+	byte ip[4];
+	char hostname[64];
+
+	struct hostnameCache_t *next; // don't think we need a prev
+} hostnameCache_t;
+

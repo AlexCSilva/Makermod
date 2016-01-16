@@ -178,6 +178,9 @@ extern char gSharedBuffer[MAX_G_SHARED_BUFFER_SIZE];
 #define MAX_CHAR_WIDTH 5
 #define CHAR_SPACING 1
 
+// SpioR - some maximums
+#define MAX_DATA_SIZE 1024*16 // 16kb
+
 typedef struct {int x1; int y1; int x2; int y2; } fontline_t; 
 
 typedef fontline_t mmodcharacter_t[MAX_LINES_PER_CHAR+1]; 
