@@ -6666,7 +6666,7 @@ void Cmd_mstatus_f( gentity_t *ent )
 		return;
 	}
 
-	MM_SendMessage( ent-g_entities, va("print \"  Name                 UserName        IP                       NPCs	ClientVersion\n\"") );
+	MM_SendMessage(ent - g_entities, "print \"  Name(UserName)       IP                    ^1HostName^7                         NPCs  ClVer  ^1Obs^7\n\"");
 
 	for ( i=0, cl=level.clients ; i < level.maxclients ; i++, cl++ ) 
 	{
@@ -6675,11 +6675,20 @@ void Cmd_mstatus_f( gentity_t *ent )
 
 		SanitizeString2( cl->pers.netname, buffer );
 
+		// SpioR - count obs
+		int Obs = 0;
+		for (int j = 0; j<MAX_GENTITIES; j++)
+		{
+			gentity_t *ob = &g_entities[j];
+
+			if (ob->creator == (ent - g_entities + 1) && !Q_stricmp(ob->classname, "mplaced"))
+				Obs++;
+		}
+
 	//	if (cl->npcCount == NULL)
 	//		cl->npcCount = 0;
 
-		MM_SendMessage( ent-g_entities, va("print \"%i %-20.20s ^7%-15.15s %-26.26s %2i %13i\n\"", i, buffer, cl->sess.username, cl->sess.ip, cl->npcCount, playerClients[ent-g_entities].version) );
-		MM_SendMessage(ent - g_entities, va("print \"%s\n\"", cl->sess.hostname)); // SpioR - lazy test
+		MM_SendMessage(ent - g_entities, va("print \"%i %-20.20s %-21.21s ^1%-32.32s^7 %4i %6i ^1%4i\n\"", i, va("%s(%s)", buffer, cl->sess.username), cl->sess.ip, cl->sess.hostname, cl->npcCount, playerClients[ent - g_entities].version, Obs));
 	}
 
 	MM_SendMessage( ent-g_entities, va("print \"\nFree Object Slots: %i  Free NPC Slots: %i  NPCs: %i  NPC models used: %i\n\"", MAX_GENTITIES - (level.entCount + g_objectMargin.integer),(g_npcLimit.integer-level.npcCount), level.npcCount, level.npcTypes) );
