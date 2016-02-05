@@ -5,6 +5,7 @@
 #include <process.h> // for _beginthread
 #include "../../libs/cjson/cJSON.h" // for JSON functions
 #include "makermod.h" // for hostnameCache_t
+#pragma comment(lib, "Ws2_32.lib") // winsock library
 
 hostnameCache_t hostnameCache;
 
