@@ -491,6 +491,7 @@
     <ClCompile Include="gl_hrtimer.c" />
     <ClCompile Include="MM_ban.c" />
     <ClCompile Include="mm_brushmodels.c" />
+    <ClCompile Include="mm_data.c" />
     <ClCompile Include="mm_hostname.c" />
     <ClCompile Include="mm_math.c" />
     <ClCompile Include="mms_shaders.c" />

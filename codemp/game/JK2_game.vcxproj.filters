@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\libs\cjson\cJSON.c">
       <Filter>cJSON</Filter>
     </ClCompile>
+    <ClCompile Include="mm_data.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ai.h" />

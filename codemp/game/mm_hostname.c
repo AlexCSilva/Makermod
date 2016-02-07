@@ -124,19 +124,8 @@ void MM_GetHostname(gclient_t *client)
 	HANDLE h_thread = (HANDLE)_beginthread(ThreadProc, 0, client);
 }
 
-void MM_ReadHostnames(void)
+void MM_ReadHostnames(const char *fileData)
 {
-	fileHandle_t f;
-	char fileData[MAX_DATA_SIZE] = { 0 };
-	int length = trap_FS_FOpenFile("data\\hostname_cache.json", &f, FS_READ);
-
-	if (!f || length <= 0)
-	{ // file not found, welp
-		return;
-	}
-
-	trap_FS_Read(fileData, MAX_DATA_SIZE, f);
-
 	cJSON * root = cJSON_Parse(fileData);
 	int len = root ? cJSON_GetArraySize(root) : 0;
 
@@ -186,16 +175,10 @@ void MM_ReadHostnames(void)
 	}
 
 	cJSON_Delete(root);
-	trap_FS_FCloseFile(f);
 }
 
-void MM_WriteHostnames(void)
+void MM_WriteHostnames(char *fileData, int *fileSize)
 {
-	fileHandle_t f;
-	char fileData[MAX_DATA_SIZE] = { 0 };
-
-	trap_FS_FOpenFile("data\\hostname_cache.json", &f, FS_WRITE);
-
 	cJSON *json_arr = cJSON_CreateArray();
 	hostnameCache_t *root = hostnameCache.next;
 	while (root)
@@ -219,7 +202,7 @@ void MM_WriteHostnames(void)
 
 		char *s = cJSON_Print(json_arr);
 
-		while (strlen(s) >= sizeof(fileData))
+		while (strlen(s) >= MAX_DATA_SIZE)
 		{
 			G_LogPrintf(__FUNCTION__"(): maximum filesize reached, removing items from start.\n");
 			cJSON_DeleteItemFromArray(json_arr, 0);
@@ -228,9 +211,7 @@ void MM_WriteHostnames(void)
 		root = root->next;
 	}
 
-	Q_strncpyz(fileData, cJSON_Print(json_arr), sizeof(fileData));
-	trap_FS_Write(fileData, strlen(fileData), f);
-
+	Q_strncpyz(fileData, cJSON_Print(json_arr), *fileSize);
+	*fileSize = strlen(fileData);
 	cJSON_Delete(json_arr);
-	trap_FS_FCloseFile(f);
 }

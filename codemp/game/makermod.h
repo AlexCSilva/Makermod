@@ -24,8 +24,11 @@ struct connectedClients_t
 
  // SpioR - declarations
 void MM_GetHostname(gclient_t *client);
-void MM_ReadHostnames(void);
-void MM_WriteHostnames(void);
+void MM_ReadHostnames(const char *fileData);
+void MM_WriteHostnames(char *fileData);
+
+void MM_ReadData(const char *fileName, int(*processData)(const char *fileData));
+void MM_WriteData(const char *fileName, int(*processData)(char *fileData, int *fileSize));
 
 typedef struct hostnameCache_s
 {

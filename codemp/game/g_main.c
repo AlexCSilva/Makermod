@@ -1858,7 +1858,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	// [RemapObject] end
 
 	// SpioR - load hostname cache and jails
-	MM_ReadHostnames();
+	MM_ReadData("hostname_cache.json", MM_ReadHostnames);
 	//	MM_ReadJails();
 
 	// let the server system know where the entites are
@@ -2041,7 +2041,7 @@ void G_ShutdownGame( int restart ) {
 	// [RemapObject] end
 
 	// SpioR - save hostname cache and jails
-	MM_WriteHostnames();
+	MM_WriteData("hostname_cache.json", MM_WriteHostnames);
 //	MM_WriteJails();
 
 //	G_Printf ("==== ShutdownGame ====\n");
