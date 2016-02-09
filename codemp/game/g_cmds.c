@@ -2,6 +2,8 @@
 //
 #include "g_local.h"
 
+#include <float.h> // SpioR - for _isnan()
+
 //Scooper - makermod
 #include "makermod.h"
 #include "mms_shader.h"
@@ -4033,7 +4035,7 @@ void Cmd_mRotateAll_f( gentity_t *ent )
 	vec3_t		result;
 	vec3_t		dest;
 	vec3_t		diff;
-	vec4_t		plane;
+//	vec4_t		plane; // SpioR - unreferenced local variable
 	gentity_t	*mainTarget;
 	gentity_t	*target;
 	gentity_t	*obj;
@@ -5141,7 +5143,7 @@ void Cmd_mJumpp_f( gentity_t *ent )
 	}
 	else
 	{
-		sprintf( buffer, "classname trigger_push spawnflags 4 pos3 \"%i %i %i\"", target->r.currentOrigin[0], target->r.currentOrigin[1], target->r.currentOrigin[2]+200 );
+		sprintf( buffer, "classname trigger_push spawnflags 4 pos3 \"%i %i %i\"", (int)target->r.currentOrigin[0], (int)target->r.currentOrigin[1], (int)target->r.currentOrigin[2]+200 );
 
 		AddSpawnVars( target, buffer );
 
@@ -6119,7 +6121,8 @@ void Cmd_mClasst_f( gentity_t *ent )
 void Cmd_mMove_f( gentity_t *ent ) 
 {
 	char		buffer[MAX_TOKEN_CHARS];
-	int			values[4];
+//	int			values[4]; // SpioR - unreferenced local variable
+
 	float		speed = 10.0f;
 
 	gentity_t	*target;
@@ -11132,7 +11135,7 @@ void DoThrow(gentity_t *ent, gentity_t *target)
 void PushThrow(gentity_t *pusher, gentity_t *ent, vec3_t forward)
 {
 	vec3_t missile_dir;
-	vec3_t bounce_dir;
+//	vec3_t bounce_dir; // SpioR - unreferenced local variable
 	int speed;
 
 	speed = VectorNormalize( ent->epVelocity );

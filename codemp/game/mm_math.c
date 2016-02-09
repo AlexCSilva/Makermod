@@ -41,6 +41,8 @@ int FormulaType(char symbol)
 		if(math_operators[i].symbol == symbol)
 			return math_operators[i].type;
 	}
+
+	return 0; // SpioR - i guess that's the logical return value
 }
 
 qboolean ProcessFormula(int *values)

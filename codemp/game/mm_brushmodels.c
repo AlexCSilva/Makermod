@@ -55,7 +55,7 @@ cplane_t *CreateNewFloatPlane (vec3_t normal, vec_t dist, int *numplanes, cplane
 	if (VectorLength(normal) < 0.5)
 	{
 		Com_Printf( "FloatPlane: bad normal\n");
-		return -1;
+		return NULL; // SpioR - proper return value
 	}
 
 	// create a new plane

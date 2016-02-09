@@ -208,7 +208,8 @@ void G_ReadSessionData( gclient_t *client, char *md5sum ) {
 	var2 = va( "session%i_2", client - level.clients );
 	trap_Cvar_VariableStringBuffer( var2, s2, sizeof(s2) );
  
-	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %s %s %s",
+	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i " "%i" " %s %s " "%s", // SpioR - 12th format was %s, should be %i\
+																			also, missed a %s at the end (i hope?)
 		&sessionTeam,                 // bk010221 - format
 		&client->sess.spectatorTime,
 		&spectatorState,              // bk010221 - format

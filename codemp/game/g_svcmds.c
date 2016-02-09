@@ -588,7 +588,7 @@ void Svcmd_AddIP_f (void)
 	else 
 	{
 		char ip[2][20];
-		char *p2;
+//		char *p2; // SpioR - unreferenced local variable
 
 		p = ConcatArgs(1);
 
@@ -799,12 +799,12 @@ void Svcmd_RemoveIP_f (void)
 void TravMD3(const char *buffer, int level)
 {
 	int numEntries;
-	char buffer2[MAX_TOKEN_CHARS];
+//	char buffer2[MAX_TOKEN_CHARS]; // SpioR - unreferenced local variable
 	char *list;//[20048];
 	char* listptr;
 	int i, length;
 
-	char fileData[MAX_OBINFO_FILE_LENGTH];
+//	char fileData[MAX_OBINFO_FILE_LENGTH]; // SpioR - unreferenced local variable
 	fileHandle_t	f;
 	int j,k;
 	md3Header_t* header;
@@ -918,7 +918,7 @@ void TravMD3(const char *buffer, int level)
 
 void Svcmd_FindMD3_f ( void ) {
 	char buffer[MAX_TOKEN_CHARS];
-	float rot[4][4];
+//	float rot[4][4]; // SpioR - unreferenced local variable
 
 	strcpy(buffer,"models/");
 	TravMD3(buffer, 0);
