@@ -493,6 +493,7 @@
     <ClCompile Include="mm_brushmodels.c" />
     <ClCompile Include="mm_data.c" />
     <ClCompile Include="mm_hostname.c" />
+    <ClCompile Include="mm_jail.c" />
     <ClCompile Include="mm_math.c" />
     <ClCompile Include="mms_shaders.c" />
     <ClCompile Include="NPC.c" />

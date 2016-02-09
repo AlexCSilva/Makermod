@@ -59,6 +59,7 @@ qboolean patchEngine;
 
 #define PERMISSION_ADMIN_SAY (1 << 11)
 #define PERMISSION_TELE_ADMIN (1 << 12)
+#define PERMISSION_JAIL (1 << 13) // SpioR - this used to be PROXY_MOD back in ProxyMod, but I figure this makes more sense
 //#define PERMISSION_SCALE_ALL (1 << 14)
 #define PERMISSION_NPC_SPAWN     (1 << 14)
 #define PERMISSION_NOCLIP  (1 << 15)
@@ -585,6 +586,7 @@ typedef struct {
 	char		hostname[256]; // SpioR - defining the hostname here.\
 										Also if anyone knows of some macro for max hostname length (in jka/q3)\
 											fix that magic number up there pls (also in mm_hostname.c)
+	qboolean	jailed;			// SpioR - defining the jail here.
 	char		objectPassword[MAX_PASSWORD_LENGTH + 1];
 	int			touchTimer;
 	int			teleTimer;

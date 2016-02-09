@@ -4049,18 +4049,8 @@ void ClientSpawn(gentity_t *ent) {
 
 	// SpioR - this function is bigger than I thought \
 				I guess here's a good enough place to handle jailed spawning
-	if (0)
-	{ // no jail system yet so
-		//jail_t jail_buf = SelectJail();
-		//G_SetOrigin(ent, jail_buf.origin);
-		//VectorCopy(jail_buf.origin, ent->client->ps.origin);
-		//SetClientViewAngle(ent, jail_buf.angles);
-		ent->client->ps.fd.forcePowersKnown = 0;
-		ent->client->ps.stats[STAT_WEAPONS] = (1 << WP_MELEE);
-		ent->client->ps.weapon = WP_MELEE;
-		ent->client->godModFlags &= ~GMOD_EMPOWERED;
-		ent->client->ps.pm_flags &= ~PM_NOCLIP;
-	}
+	if (ent->client->sess.jailed == qtrue)
+		MM_JailClient(ent, qtrue);
 }
 
 
@@ -4240,6 +4230,7 @@ void ClientDisconnect( int clientNum ) {
 	ent->client->ps.persistant[PERS_TEAM] = TEAM_FREE;
 	ent->client->sess.sessionTeam = TEAM_FREE;
 	ent->client->sess.hostname[0] = '\0'; // SpioR - this should do the trick (hopefully)
+	ent->client->sess.jailed = qfalse;
 	ent->r.contents = 0;
 
 	ent->userinfoChanged = 0;

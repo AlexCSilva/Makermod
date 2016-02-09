@@ -49,6 +49,8 @@ hostnameCache_t *hostnameCache_add(byte ip[4], const char *hostname)
 	for (int i = 0; i < 4; i++)
 		newItem->ip[i] = ip[i];
 	Q_strncpyz(newItem->hostname, hostname, sizeof(newItem->hostname));
+
+	return newItem;
 }
 
 void ThreadProc(void *ptr)
@@ -152,6 +154,7 @@ void MM_ReadHostnames(const char *fileData)
 		}
 
 		byte ip_b[4] = { 0 };
+		qboolean _continue = qfalse;
 		for (int j = 0; j < 4; j++)
 		{
 			cJSON *ip_m = cJSON_GetArrayItem(ip, j);
@@ -160,9 +163,10 @@ void MM_ReadHostnames(const char *fileData)
 			else
 			{
 				G_LogPrintf(__FUNCTION__"(): item %i has corrupted ip byte, skipping.\n", i);
-				continue;
+				_continue = qtrue;
 			}
 		}
+		if (_continue) continue;
 
 		cJSON *hostname = cJSON_GetObjectItem(item, "hostname");
 		if (!hostname)

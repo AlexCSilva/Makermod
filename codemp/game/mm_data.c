@@ -2,7 +2,7 @@
 #include "q_shared.h"
 #include "g_local.h" // for MAX_DATA_SIZE
 
-void MM_ReadData(const char *fileName, int (*processData)(const char *fileData))
+void MM_ReadData(const char *fileName, void (*processData)(const char *fileData))
 {
 	fileHandle_t f;
 	char *fileData = (char*)calloc(1, MAX_DATA_SIZE);
@@ -23,7 +23,7 @@ void MM_ReadData(const char *fileName, int (*processData)(const char *fileData))
 	free(fileData);
 }
 
-void MM_WriteData(const char *fileName, int(*processData)(char *fileData, int *fileSize))
+void MM_WriteData(const char *fileName, void(*processData)(char *fileData, int *fileSize))
 {
 	fileHandle_t f;
 	int fileSize = MAX_DATA_SIZE;
