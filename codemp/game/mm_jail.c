@@ -77,7 +77,7 @@ void MM_ReadJails(const char *fileData)
 		}
 
 		float origin_v[3] = { 0 };
-		qboolean _continue = qfalse;
+		qboolean _continue = qtrue;
 		for (int j = 0; j < 3; j++)
 		{
 			cJSON *origin_m = cJSON_GetArrayItem(origin, j);
@@ -223,14 +223,12 @@ void Cmd_Jail_f(gentity_t *ent)
 		return;
 	}
 
-	gentity_t *target = &g_entities[clientNum];
-
-	if (target->client->sess.jailed == qfalse)
-		MM_JailClient(target, qfalse);
+	if (ent->client->sess.jailed == qfalse)
+		MM_JailClient(ent, qfalse);
 	else
 	{
-		target->client->sess.jailed = qfalse;
-		ClientSpawn(target); // not sure how safe this is but what the heck lmao
+		ent->client->sess.jailed = qfalse;
+		ClientSpawn(ent); // not sure how safe this is but what the heck lmao
 	}
 	
 }

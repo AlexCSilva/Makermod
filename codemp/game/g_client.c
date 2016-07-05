@@ -2334,7 +2334,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	//Fake client detection.
 	qboolean	gDetectFakePlayers	= trap_Cvar_VariableIntegerValue("g_DetectFakePlayers");
 	qboolean	gFakePlayersBan		= trap_Cvar_VariableIntegerValue("g_FakePlayersAutoBan");
-	char	tempIP[26] = { 0 };
+//	char	tempIP[26] = { 0 }; -- SpioR - what?
 
 	if (g_maxClientsfromIP.integer < 0)
 		g_maxClientsfromIP.integer = 0;
@@ -2379,7 +2379,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		else return "Banned.";
 	}
 
-	Q_strncpyz(tempIP, value, 26);
+//	Q_strncpyz(tempIP, value, 26);
 
 	if ( !( ent->r.svFlags & SVF_BOT ) && !isBot && g_needpass.integer ) {
 		// check for a password
@@ -2437,10 +2437,10 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 //	areabits = client->areabits;
 
 	{ // SpioR - Scooper's shitty duct tape fix that I will keep because any other methods are even shittier
-		char itsLikeYouDontTrustMe[256];
-		memcpy(itsLikeYouDontTrustMe, client->sess.hostname, sizeof(client->sess.hostname));
+		char *itsLikeYouDontTrustMe;
+		itsLikeYouDontTrustMe = client->sess.hostname;
 		memset(client, 0, sizeof(*client));
-		memcpy(client->sess.hostname, itsLikeYouDontTrustMe, sizeof(client->sess.hostname));
+		client->sess.hostname = itsLikeYouDontTrustMe;
 	}
 
 	client->pers.connected = CON_CONNECTING;
@@ -2468,7 +2468,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		else
 			G_ReadSessionData( client, NULL );
 	}
-	Q_strncpyz(ent->client->sess.ip, tempIP, 26);
+//	Q_strncpyz(ent->client->sess.ip, tempIP, 26);
 
 	client->pers.firstEnterTime = clock();
 
@@ -2498,9 +2498,10 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		}
 
 		// SpioR - Getting their hostname
-		MM_GetHostname(client);
+		if(!isBot)
+			MM_GetHostname(client);
 
-		if (client->sess.hostname[0] == '\0') 
+		if (!isBot && client->sess.hostname == NULL) 
 			return "Authorizing...";
 	}
 		
@@ -4046,6 +4047,11 @@ void ClientSpawn(gentity_t *ent) {
 
 	//Makermod
 	G_Unempower( ent );
+
+	// SpioR - this function is bigger than I thought \
+				I guess here's a good enough place to handle jailed spawning
+	if (ent->client->sess.jailed == qtrue)
+		MM_JailClient(ent, qtrue);
 }
 
 
@@ -4082,9 +4088,6 @@ void ClientDisconnect( int clientNum ) {
 	ClearPlayerRemaps(clientNum);
 	InitPlayerRemaps(clientNum);
 	// [RemapObject] end
-
-	// Unmute
-	ent->muted = qfalse;
 
 	strcpy(PortlessIp,ent->client->sess.ip);
 
@@ -4224,7 +4227,9 @@ void ClientDisconnect( int clientNum ) {
 	ent->client->pers.connected = CON_DISCONNECTED;
 	ent->client->ps.persistant[PERS_TEAM] = TEAM_FREE;
 	ent->client->sess.sessionTeam = TEAM_FREE;
-	ent->client->sess.hostname[0] = '\0'; // SpioR - this should do the trick (hopefully)
+	ent->client->sess.hostname = NULL; // SpioR - this should do the trick (hopefully)
+	ent->client->sess.muted = qfalse;
+	ent->client->sess.jailed = qfalse;
 	ent->r.contents = 0;
 
 	ent->userinfoChanged = 0;

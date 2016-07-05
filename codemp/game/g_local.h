@@ -59,6 +59,7 @@ qboolean patchEngine;
 
 #define PERMISSION_ADMIN_SAY (1 << 11)
 #define PERMISSION_TELE_ADMIN (1 << 12)
+#define PERMISSION_JAIL (1 << 13) // SpioR - this used to be PROXY_MOD back in ProxyMod, but I figure this makes more sense
 //#define PERMISSION_SCALE_ALL (1 << 14)
 #define PERMISSION_NPC_SPAWN     (1 << 14)
 #define PERMISSION_NOCLIP  (1 << 15)
@@ -177,6 +178,9 @@ extern char gSharedBuffer[MAX_G_SHARED_BUFFER_SIZE];
 #define MAX_LINES_PER_CHAR 7
 #define MAX_CHAR_WIDTH 5
 #define CHAR_SPACING 1
+
+// SpioR - some maximums
+#define MAX_DATA_SIZE 1024*16 // 16kb
 
 typedef struct {int x1; int y1; int x2; int y2; } fontline_t; 
 
@@ -488,7 +492,6 @@ struct gentity_s {
 	qboolean tagFound;	// Tag used for more quickly building selected-lists on clients.
 	float grabAngle;	// yaw angle for grabbing.
 	int attached;		// Attach entity to bolt.
-	qboolean muted;		// Check to see if the player is muted or not.
 #ifdef PORTALS
 	float portal_matrix[3][3];
 #endif
@@ -579,9 +582,9 @@ typedef struct {
 	char		password[MAX_PASSWORD_LENGTH + 1];
 	vec3_t		mark;
 	char        ip[MAX_IPSTRING];
-	char		hostname[256]; // SpioR - defining the hostname here.\
-										Also if anyone knows of some macro for max hostname length (in jka/q3)\
-											fix that magic number up there pls (also in mm_hostname.c)
+	char		*hostname;	// SpioR - defining the hostname here.
+	qboolean	muted;		// Check to see if the player is muted or not. -- SpioR - moved from gentity_t
+	qboolean	jailed;		// SpioR - defining the jail here.
 	char		objectPassword[MAX_PASSWORD_LENGTH + 1];
 	int			touchTimer;
 	int			teleTimer;

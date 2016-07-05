@@ -102,7 +102,7 @@ char *permissionCode[32] =
 	"ADMIN_MUTE",
 	"ADMIN_SAY",
 	"ADMIN_TELE",
-	"",
+	"ADMIN_JAIL", // SpioR - :)
 	"NPC_SPAWN",
 	"NOCLIP",
 	"GOD",
@@ -3241,7 +3241,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	char		location[64];
 	char		*locMsg = NULL;
 
-	if( ent->muted )
+	if( ent->client->sess.muted )
 	{
 		trap_SendServerCommand( ent-g_entities, va("chat \"^7%s\"", "You are muted. You can't speak!"));
 		return;
@@ -6669,7 +6669,7 @@ void Cmd_mstatus_f( gentity_t *ent )
 		return;
 	}
 
-	MM_SendMessage(ent - g_entities, "print \"  Name(UserName)       IP                    ^1HostName^7                         NPCs  ClVer  ^1Obs^7\n\"");
+	MM_SendMessage(ent - g_entities, "print \"  Name(UserName)       IP                    HostName^7                         NPCs  ClVer  Obs^7\n\"");
 
 	for ( i=0, cl=level.clients ; i < level.maxclients ; i++, cl++ ) 
 	{
@@ -6684,17 +6684,24 @@ void Cmd_mstatus_f( gentity_t *ent )
 		{
 			gentity_t *ob = &g_entities[j];
 
-			if (ob->creator == (ent - g_entities + 1) && !Q_stricmp(ob->classname, "mplaced"))
+			if (ob->creator == i && !Q_stricmp(ob->classname, "mplaced"))
 				Obs++;
 		}
 
 	//	if (cl->npcCount == NULL)
 	//		cl->npcCount = 0;
 
-		MM_SendMessage(ent - g_entities, va("print \"%i %-20.20s %-21.21s ^1%-32.32s^7 %4i %6i ^1%4i\n\"", i, va("%s(%s)", buffer, cl->sess.username), cl->sess.ip, cl->sess.hostname, cl->npcCount, playerClients[ent - g_entities].version, Obs));
+		// SpioR - color the client based on their status (jailed, muted, ignored etc.)
+		int color = 7;
+		if (cl->sess.jailed == qtrue) color = 1;
+		if (cl->sess.muted == qtrue) color = 6;
+		//if (ent->client->sess.ignored[cl-level.clients] == qtrue) color = 3;
+		//if (cl->sess.ignored[ent-g_entities] == qtrue) color = 4;
+		MM_SendMessage(ent - g_entities, va("print \"^%i%i %-20.20s %-21.21s %-32.32s^7 %4i %6i %4i\n\"", color, i, va("%s(%s)", buffer, cl->sess.username), cl->sess.ip, cl->sess.hostname, cl->npcCount, playerClients[i].version, Obs));
 	}
 
 	MM_SendMessage( ent-g_entities, va("print \"\nFree Object Slots: %i  Free NPC Slots: %i  NPCs: %i  NPC models used: %i\n\"", MAX_GENTITIES - (level.entCount + g_objectMargin.integer),(g_npcLimit.integer-level.npcCount), level.npcCount, level.npcTypes) );
+	MM_SendMessage( ent-g_entities, "print \"Legend: ^1jailed ^6muted ^3ignored ^4ignoring you\n\"");
 }
 
 void Cmd_mlistadmins_f ( gentity_t *ent )
@@ -10280,10 +10287,18 @@ void Cmd_minfo_f( gentity_t *ent )
 			MM_SendMessage( ent-g_entities, "print \"^5/mlistadmins^7 - list of players logged in as admin\n\"");
 			MM_SendMessage( ent-g_entities, va("print \"\nUser Management\n\n\""));
 
-			if ( ent->client->sess.permissions & PERMISSION_ADMIN_SAY )
+			if (ent->client->sess.permissions & PERMISSION_ADMIN_SAY)
 			{
-				MM_SendMessage( ent-g_entities, "print \"^5/mpsay^7 - sends a screen print message to a user or all users\n\"");
-				MM_SendMessage( ent-g_entities, "print \"^5/mannounce^7 - displays a screen print message to all users for 20secs\n\"");
+				MM_SendMessage(ent - g_entities, "print \"^5/mpsay^7 - sends a screen print message to a user or all users\n\"");
+				MM_SendMessage(ent - g_entities, "print \"^5/mannounce^7 - displays a screen print message to all users for 20secs\n\"");
+			}
+
+			if (ent->client->sess.permissions & PERMISSION_JAIL)
+			{
+				MM_SendMessage(ent - g_entities, "print \"^5/mjail^7 - jails a given client\n\"");
+				MM_SendMessage(ent - g_entities, "print \"^5/mnewjail^7 - creates a new jail spot on your current origin\n\"");
+				MM_SendMessage(ent - g_entities, "print \"^5/mdeljail^7 - deletes a jail point\n\"");
+				MM_SendMessage(ent - g_entities, "print \"^5/mlistjail^7 - lists all jail points\n\"");
 			}
 
 			if ( ent->client->sess.permissions & PERMISSION_STATUS )
@@ -14366,13 +14381,13 @@ void Cmd_mMute_f( gentity_t *ent)
 
 	target = &g_entities[clientNum];
 
-	if ( target->muted )
+	if ( target->client->sess.muted )
 	{
 		MM_SendMessage( ent-g_entities, va("print \"ERROR: This player is already muted.\n\"") );
 		return;	
 	}
 	
-	target->muted = qtrue;
+	target->client->sess.muted = qtrue;
 	MM_SendMessage( ent-g_entities, va("print \"%s^7 has been muted.\n\"",target->client->pers.netname) );
 
 	MM_SendMessage( clientNum, va("print \"You have been muted by %s^7.\n\"",ent->client->pers.netname) );
@@ -14406,13 +14421,13 @@ void Cmd_mUnMute_f( gentity_t *ent)
 
 	target = &g_entities[clientNum];
 
-	if ( !target->muted )
+	if ( !target->client->sess.muted )
 	{
 		MM_SendMessage( ent-g_entities, va("print \"ERROR: This player isn't muted.\n\"") );
 		return;	
 	}
 	
-	target->muted = qfalse;
+	target->client->sess.muted = qfalse;
 	MM_SendMessage( ent-g_entities, va("print \"%s^7 has been unmuted.\n\"",target->client->pers.netname) );
 
 	MM_SendMessage( clientNum, va("print \"You have been unmuted by %s^7.\n\"",ent->client->pers.netname) );
@@ -14429,7 +14444,7 @@ void Cmd_mListMute_f( gentity_t *ent ) {
 	{
 		if ( target->client->pers.connected != CON_CONNECTED ) 
 			continue;
-		if ( !target->muted)
+		if ( !target->client->sess.muted)
 			continue;
 
 		muted = qtrue;
@@ -16012,6 +16027,13 @@ struct command_t
 	{ "mshadergroup", Cmd_mShaderGroup_f },
 //	{ "mmClientVersion", MMS_ConfirmClientVersion }
 	// [RemapObj] end
+
+	// SpioR - commands
+	{ "mjail", Cmd_Jail_f },
+	{ "mnewjail", Cmd_NewJail_f },
+	{ "mdeljail", Cmd_DelJail_f },
+	{ "mlistjail", Cmd_ListJail_f },
+
 	{ "god", Cmd_God_f},
 	{ "notarget", Cmd_Notarget_f },
 	{ "noclip", Cmd_Noclip_f },
@@ -16234,6 +16256,13 @@ void ClientCommand( int clientNum ) {
 	}
 
 #endif
+
+	// SpioR - i guess it's okay to let them chat and check the score, heh
+	if (ent->client->sess.jailed == qtrue)
+	{
+		MM_SendMessage(clientNum, va("print \"You can't use this command while jailed. \n\""));
+		return;
+	}
 
 	if (Q_stricmp(cmd, "mpsay") == 0)
 	{

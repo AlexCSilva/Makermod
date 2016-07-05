@@ -1857,6 +1857,12 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	InitAllPlayerRemaps();
 	// [RemapObject] end
 
+	// SpioR - load hostname cache and jails
+	MM_ReadData("hostname_cache.json", MM_ReadHostnames);
+
+	trap_Cvar_Register(&mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM);
+	MM_ReadData(va("jails\\%s.json", mapname.string), MM_ReadJails);
+
 	// let the server system know where the entites are
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ), 
 		&level.clients[0].ps, sizeof( level.clients[0] ) );
@@ -1887,7 +1893,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	//make sure saber data is loaded before this! (so we can precache the appropriate hilts)
 	InitSiegeMode();
 
-	trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
+//	trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM ); // SpioR - we're loading this ourselves a bit above so
 	trap_Cvar_Register( &ckSum, "sv_mapChecksum", "", CVAR_ROM );
 
 	navCalculatePaths	= ( trap_Nav_Load( mapname.string, ckSum.integer ) == qfalse );
@@ -2035,6 +2041,9 @@ void G_ShutdownGame( int restart ) {
 	// Makermod
 	ClearAllPlayerRemaps();
 	// [RemapObject] end
+
+	// SpioR - save hostname cache and jails
+	MM_WriteData("hostname_cache.json", MM_WriteHostnames);
 
 //	G_Printf ("==== ShutdownGame ====\n");
 
