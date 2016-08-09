@@ -6395,9 +6395,9 @@ void Cmd_mslay_f( gentity_t *ent )
 		MM_SendMessage( ent-g_entities, va("print \"Command usage: mslay\n\""));
 		return;
 	}
-	else if ( trap_Argc() > 2 )
+	else if ( trap_Argc() > 3 )
 	{
-		MM_SendMessage( ent-g_entities, va("print \"Command usage: mslay <optional-client-name-or-number>\n\""));
+		MM_SendMessage( ent-g_entities, va("print \"Command usage: mslay <optional-client-name-or-number> <optional-death-method>\n\""));
 		return;
 	}
 
@@ -6460,7 +6460,22 @@ void Cmd_mslay_f( gentity_t *ent )
 	{
 		target->flags &= ~FL_GODMODE;
 		target->client->ps.stats[STAT_HEALTH] = target->health = -999;
-		player_die (target, ent, ent, 100000, MOD_UNKNOWN);
+		int method = MOD_UNKNOWN;
+
+		if(trap_Argc() == 3)
+		{
+			char buffer1[MAX_TOKEN_CHARS];
+			trap_Argv(2, buffer1, sizeof(buffer1));
+			method = atoi(buffer1);
+
+			if (method > MOD_MAX) method = 0;
+		}
+
+		player_die(target, ent, ent, 100000, method);
+
+		// SpioR: just for fun :)
+		if (method == MOD_DISRUPTOR_SNIPER)
+			target->client->ps.eFlags |= EF_DISINTEGRATION;
 	}
 
 

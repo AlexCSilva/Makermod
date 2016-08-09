@@ -173,3 +173,4 @@ pip-log.txt
 #############
 *.o
 *.so
+/codemp/Makermod 1.x.VC.VC.opendb
