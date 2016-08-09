@@ -121,7 +121,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	var = va( "session%i", client - level.clients );
 	trap_Cvar_Set( var, s );
 
-	s2 = va("%s %i %i %i %i %i %i %s %i %i %s %s",
+	s2 = va("%s %i %i %i %i %i %i %s %i %i %i %s %s",
 		saber2Type,
 //		client->sess.permissions,
 		client->sess.arm,
@@ -133,6 +133,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 		client->sess.ip,
 		client->sess.muted,
 		client->sess.jailed,
+		client->sess.ignore,
 		#ifdef RANKINGMOD
 		client->sess.playerUsername,
 		#endif
@@ -229,7 +230,7 @@ void G_ReadSessionData( gclient_t *client, char *md5sum ) {
 		&client->sess.saber2Type
 		);
 
-	sscanf( s2, "%s %i %i %i %f %f %f %s %i %i %s %s",
+	sscanf( s2, "%s %i %i %i %f %f %f %s %i %i %i %s %s",
 		&client->sess.saber2Type,
 //		&client->sess.permissions,
 		&client->sess.arm,
@@ -241,6 +242,7 @@ void G_ReadSessionData( gclient_t *client, char *md5sum ) {
 		&client->sess.ip,
 		&client->sess.muted,
 		&client->sess.jailed,
+		&client->sess.ignore,
 		#ifdef RANKINGMOD
 		&client->sess.playerUsername,
 		#endif

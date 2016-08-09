@@ -585,6 +585,7 @@ typedef struct {
 	char		*hostname;	// SpioR - defining the hostname here.
 	qboolean	muted;		// Check to see if the player is muted or not. -- SpioR - moved from gentity_t
 	qboolean	jailed;		// SpioR - defining the jail here.
+	int			ignore;		// SpioR - defining ignored clients (as bits) here.
 	char		objectPassword[MAX_PASSWORD_LENGTH + 1];
 	int			touchTimer;
 	int			teleTimer;

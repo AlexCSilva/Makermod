@@ -3306,7 +3306,10 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	Q_strncpyz( text, chatText, sizeof(text) );
 
 	if ( target ) {
-		G_SayTo( ent, target, mode, color, name, text, locMsg );
+		if (target->client->sess.ignore & (ent - g_entities) + 1)
+			MM_SendMessage(ent - g_entities, va("print \"Sorry, this client is ignoring you.\n\""));
+		else
+			G_SayTo( ent, target, mode, color, name, text, locMsg );
 		return;
 	}
 
@@ -3318,7 +3321,8 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	// send it to all the apropriate clients
 	for (j = 0; j < level.maxclients; j++) {
 		other = &g_entities[j];
-		G_SayTo( ent, other, mode, color, name, text, locMsg );
+		if(!(other->client->sess.ignore & (ent-g_entities)+1)) // SpioR: don't send ignored clients' messsages
+			G_SayTo( ent, other, mode, color, name, text, locMsg );
 	}
 }
 
@@ -10391,6 +10395,8 @@ void Cmd_minfo_f( gentity_t *ent )
 			MM_SendMessage( ent-g_entities, "print \"^5/mempower^7 - gives you all force powers\n\"");
 			MM_SendMessage( ent-g_entities, "print \"^5/mscaleme^7 - changes your size (less than one is small E.g. 0.5, larger than one is big)\n^5/mscalet^7 - changes the size of an NPC you're close to and looking at (if it's your npc)\n\"");
 			MM_SendMessage( ent-g_entities, "print \"^5/mattack^7 - tells your npc's to attack the npc/player in your crosshairs. Npc response varies.\n\"");
+			MM_SendMessage(ent - g_entities, "print \"^5/mignore^7 - toggles ignore of a specified client\n\"");
+			MM_SendMessage(ent - g_entities, "print \"^5/mlistignore^7 - lists clients you are currently ignoring\n\"");
 		}
 		else if ( Q_stricmp("tele", buffer) == 0 && ((ent->client->sess.permissions & PERMISSION_TELE) || (ent->client->sess.permissions & PERMISSION_TELE_ADMIN))  )
 		{
@@ -15821,6 +15827,65 @@ qboolean TryGrapple(gentity_t *ent)
 //}
 }
 
+void Cmd_Ignore_f(gentity_t *ent)
+{
+	char buffer[MAX_TOKEN_CHARS];
+	int clientNum;
+
+	if (trap_Argc() != 2)
+	{
+		MM_SendMessage(ent - g_entities, va("print \"Command usage: mignore <client-name-or-number>\n\""));
+		return;
+	}
+
+	trap_Argv(1, buffer, sizeof(buffer));
+
+	clientNum = ClientNumberFromString(ent, buffer);
+
+	if (clientNum == -1)
+	{
+		MM_SendMessage(ent - g_entities, va("print \"ERROR: Could not identify player %s\n\"", buffer));
+		return;
+	}
+
+	gentity_t *target = &g_entities[clientNum];
+
+	if (ent->client->sess.ignore & clientNum+1)
+	{
+		ent->client->sess.ignore &= ~clientNum+1;
+		MM_SendMessage(ent - g_entities, va("print \"%s^7 has been unignored.\n\"", target->client->pers.netname));
+		MM_SendMessage(ent - g_entities, va("cp \"%s^7\nhas been unignored.\"", target->client->pers.netname));
+	}
+	else
+	{
+		ent->client->sess.ignore |= clientNum+1;
+		MM_SendMessage(ent - g_entities, va("print \"%s^7 has been ignored.\n\"", target->client->pers.netname));
+		MM_SendMessage(ent - g_entities, va("cp \"%s^7\nhas been ignored.\"", target->client->pers.netname));
+	}
+}
+
+void Cmd_ListIgnore_f(gentity_t *ent)
+{
+	gclient_t* cl;
+	int i, j = 0;
+	qboolean ignored = qfalse;
+
+	MM_SendMessage(ent - g_entities, va("print \"List of ignored clients:\n"));
+	for (i = 0, cl = level.clients; i < level.maxclients; i++, cl++)
+	{
+		if (cl->pers.connected != CON_CONNECTED)
+			continue;
+		if (!(ent->client->sess.ignore & i+1))
+			continue;
+
+		ignored = qtrue;
+		j++;
+		MM_SendMessage(ent - g_entities, va("print \"%i - %s\n\"", j, cl->pers.netname));
+	}
+	if (!ignored)
+		MM_SendMessage(ent - g_entities, va("print \"You are not ignoring anybody.\n"));
+}
+
 #ifndef FINAL_BUILD
 qboolean saberKnockOutOfHand(gentity_t *saberent, gentity_t *saberOwner, vec3_t velocity);
 #endif
@@ -16033,6 +16098,8 @@ struct command_t
 	{ "mnewjail", Cmd_NewJail_f },
 	{ "mdeljail", Cmd_DelJail_f },
 	{ "mlistjail", Cmd_ListJail_f },
+	{ "mignore", Cmd_Ignore_f },
+	{ "mlistignore", Cmd_ListIgnore_f },
 
 	{ "god", Cmd_God_f},
 	{ "notarget", Cmd_Notarget_f },

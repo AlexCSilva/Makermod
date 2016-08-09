@@ -2334,7 +2334,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	//Fake client detection.
 	qboolean	gDetectFakePlayers	= trap_Cvar_VariableIntegerValue("g_DetectFakePlayers");
 	qboolean	gFakePlayersBan		= trap_Cvar_VariableIntegerValue("g_FakePlayersAutoBan");
-//	char	tempIP[26] = { 0 }; -- SpioR - what?
+	char	tempIP[26] = { 0 };
 
 	if (g_maxClientsfromIP.integer < 0)
 		g_maxClientsfromIP.integer = 0;
@@ -2379,7 +2379,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		else return "Banned.";
 	}
 
-//	Q_strncpyz(tempIP, value, 26);
+	Q_strncpyz(tempIP, value, 26);
 
 	if ( !( ent->r.svFlags & SVF_BOT ) && !isBot && g_needpass.integer ) {
 		// check for a password
@@ -2451,8 +2451,11 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	// [RemapObj] end
 
 	// read or initialize the session data
-	if ( firstTime || level.newSession ) 
-		G_InitSessionData( client, userinfo, isBot );
+	if (firstTime || level.newSession)
+	{
+		G_InitSessionData(client, userinfo, isBot);
+		Q_strncpyz(ent->client->sess.ip, tempIP, 26);
+	}
 	else
 	{
 		if(!isBot)
@@ -2468,7 +2471,6 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		else
 			G_ReadSessionData( client, NULL );
 	}
-//	Q_strncpyz(ent->client->sess.ip, tempIP, 26);
 
 	client->pers.firstEnterTime = clock();
 

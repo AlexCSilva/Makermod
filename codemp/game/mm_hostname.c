@@ -117,7 +117,7 @@ void MM_GetHostname(gclient_t *client)
 		byte ip[4] = { 0 };
 
 		if (!parseIP(client->sess.ip, ip))
-			continue;
+			return;
 
 		if (root->ip[0] == ip[0] &&
 			root->ip[1] == ip[1] &&
