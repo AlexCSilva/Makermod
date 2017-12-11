@@ -589,14 +589,14 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 	switch ( command ) {
 	case GAME_INIT:
 		//[CrashLog]
-		EnableStackTrace();
+		//EnableStackTrace();
 		//[/CrashLog]
 		G_InitGame( arg0, arg1, arg2 );
 		return 0;
 	case GAME_SHUTDOWN:
 		G_ShutdownGame( arg0 );
 		//[CrashLog]
-		DisableStackTrace();
+		//DisableStackTrace();
 		//[/CrashLog]
 		return 0;
 	case GAME_CLIENT_CONNECT:
@@ -1725,8 +1725,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 #endif
 
 	//Bobafetts fix:
-	if(patchEngine)
-		JKG_PatchEngine();
+	/*if(patchEngine)
+		JKG_PatchEngine();*/
 	//TestRotateBoundingBoxPatch();
 
 	//Init RMG to 0, it will be autoset to 1 if there is terrain on the level.
@@ -2025,7 +2025,7 @@ void G_ShutdownGame( int restart ) {
 #endif
 
 	//Bobafetts fix:
-	JKG_UnpatchEngine();
+	//JKG_UnpatchEngine();
 
 #ifdef MM_BRUSH
 	MM_S_FreeMemory();
