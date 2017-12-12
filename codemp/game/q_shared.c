@@ -983,6 +983,8 @@ char *Q_CleanStr( char *string ) {
 
 	return string;
 }
+
+
 /*
 ============
 Q_vsnprintf
@@ -1001,11 +1003,11 @@ Q_vsnprintf: always appends a trailing '\0', returns number of characters writte
 or returns -1 on failure or if the buffer would be overflowed.
 ============
 */
-int Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr ) {
+int Q_vsnprintf( char *dest, size_t size, const char *fmt, va_list argptr ) {
         int ret;
  
 #ifdef _WIN32
-        ret = Q_vsnprintf( dest, size-1, fmt, argptr );
+        ret = _vsnprintf( dest, size, fmt, argptr );
 #else
         ret = vsnprintf( dest, size, fmt, argptr );
 #endif

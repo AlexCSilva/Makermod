@@ -1,7 +1,7 @@
 CC := gcc
 ARCH = $(shell uname -m)
 TARGET = ./jampgamei386.so
-CFLAGS = -fPIC -w -lm -lssl -mno-sse -mno-sse2 -mfpmath=387 -I../qcommon -I../server -I../icarus -I../ghoul2 -I../../libs/openssl/include/ -I./ -DMISSIONPACK -DQAGAME -D_JK2 -DFINAL_BUILD -DMM_WIP -DMM_RELEASE -DMM_THROW -DMM_THROW2 -DJK2AWARDS -DNO_ENGINE_PATCH
+CFLAGS = -fPIC -w -lm -lssl -I../qcommon -I../server -I../icarus -I../ghoul2 -I../../libs/openssl/include/ -I./ -DMISSIONPACK -DQAGAME -D_JK2 -DFINAL_BUILD -DMM_WIP -DMM_RELEASE -DMM_THROW -DMM_THROW2 -DJK2AWARDS -DNO_ENGINE_PATCH
 
 
 # gl_hrtimer.c

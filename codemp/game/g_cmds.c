@@ -4127,9 +4127,9 @@ void Cmd_mRotateAll_f( gentity_t *ent )
 			RotatePoint(target->r.currentOrigin, mainTarget->r.currentOrigin, mainTarget->r.currentAngles, Angle, axis, result);
 			
 			// This sets the actual movement settings.
-			if(_isnan(result[0]) || _isnan(result[0]) || //1.#QNAN00
-				_isnan(result[1]) || _isnan(result[1]) ||
-				_isnan(result[2]) || _isnan(result[2]))
+			if(isnan(result[0]) || isnan(result[0]) || //1.#QNAN00
+				isnan(result[1]) || isnan(result[1]) ||
+				isnan(result[2]) || isnan(result[2]))
 			{
 				MM_SendMessage( ent-g_entities, va("print \"A value has gone out of range, check your angles\n\""));
 				return;
