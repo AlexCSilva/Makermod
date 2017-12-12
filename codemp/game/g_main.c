@@ -786,7 +786,6 @@ void QDECL G_Printf( const char *fmt, ... ) {
 
 	va_start (argptr, fmt);
 	ret = Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-	//ret = vsprintf (text, fmt, argptr);
 	va_end (argptr);
 
 	if ( ret == -1 )
