@@ -1005,7 +1005,7 @@ int Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr ) {
         int ret;
  
 #ifdef _WIN32
-        ret = _vsnprintf( dest, size-1, fmt, argptr );
+        ret = Q_vsnprintf( dest, size-1, fmt, argptr );
 #else
         ret = vsnprintf( dest, size, fmt, argptr );
 #endif
@@ -1078,7 +1078,7 @@ char	* QDECL va( const char *format, ... ) {
 
 	return buf;
 }*/
-char    * QDECL va( char *format, ... ) {
+char    * QDECL va( const char *format, ... ) {
         va_list         argptr;
         #define MAX_VA_STRING   32000
         #define MAX_VA_BUFFERS 4

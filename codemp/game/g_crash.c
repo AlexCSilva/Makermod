@@ -1,6 +1,9 @@
 //[CrashLog]
 #include "../game/g_local.h"
 
+#include <stdint.h>
+#if UINTPTR_MAX == 0xffffffff
+
 #if defined __linux__ && !defined GNUC
 
 	#include <string.h>
@@ -415,6 +418,20 @@
 
 #else //other platforms
 //FIXME: Get rich, buy a mac, figure out how to do this on OSX.
+#endif
+
+#elif UINTPTR_MAX == 0xffffffffffffffff
+/* 64-bit */
+void installcrashhandler(void){}
+void restorecrashhandler(void){}
+void win32_initialize_handler(void){}
+void win32_deinitialize_handler(void){}
+#else
+/* wtf */
+void installcrashhandler(void){}
+void restorecrashhandler(void){}
+void win32_initialize_handler(void){}
+void win32_deinitialize_handler(void){}
 #endif
 
 void EnableCoreDumps() {

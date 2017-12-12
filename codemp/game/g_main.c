@@ -16,7 +16,7 @@
 #endif
 
 #ifdef RANKINGMOD
-#include "..\ToastPlayerInfo\ToastPlayerInfo.h"
+#include "../ToastPlayerInfo/ToastPlayerInfo.h"
 #endif
 
 level_locals_t	level;
@@ -785,7 +785,8 @@ void QDECL G_Printf( const char *fmt, ... ) {
 
 	va_start (argptr, fmt);
 	// changed to _vsnprintf to prevent buffer overflow
-	_vsnprintf (text, sizeof(text), fmt, argptr);
+	Q_vsnprintf (text, sizeof(text), fmt, argptr);
+	//vsprintf (text, fmt, argptr);
 	va_end (argptr);
 
 	trap_Printf( text );
