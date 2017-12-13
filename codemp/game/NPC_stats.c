@@ -234,7 +234,7 @@ extern qboolean BG_ParseLiteral( const char **data, const char *string );
 //
 // NPC parameters file : scripts/NPCs.cfg
 //
-#define MAX_NPC_DATA_SIZE 0x20000
+#define MAX_NPC_DATA_SIZE 0x80000
 char	NPCParms[MAX_NPC_DATA_SIZE];
 char	NPCFile[MAX_QPATH];
 
