@@ -2436,7 +2436,12 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 
 //	areabits = client->areabits;
 
-	memset( client, 0, sizeof(*client) );
+	{ // SpioR - Scooper's shitty duct tape fix that I will keep because any other methods are even shittier
+		char *itsLikeYouDontTrustMe;
+		itsLikeYouDontTrustMe = client->sess.hostname;
+		memset(client, 0, sizeof(*client));
+		client->sess.hostname = itsLikeYouDontTrustMe;
+	}
 
 	client->pers.connected = CON_CONNECTING;
 
@@ -2446,8 +2451,11 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 	// [RemapObj] end
 
 	// read or initialize the session data
-	if ( firstTime || level.newSession ) 
-		G_InitSessionData( client, userinfo, isBot );
+	if (firstTime || level.newSession)
+	{
+		G_InitSessionData(client, userinfo, isBot);
+		Q_strncpyz(ent->client->sess.ip, tempIP, 26);
+	}
 	else
 	{
 		if(!isBot)
@@ -2463,12 +2471,12 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 		else
 			G_ReadSessionData( client, NULL );
 	}
-	Q_strncpyz(ent->client->sess.ip, tempIP, 26);
 
 	client->pers.firstEnterTime = clock();
 
 	if (firstTime)
 	{
+
 		for (i = 0; i < MAX_CLIENTS; i++) {
 			if (!Q_stricmp(PortlessIp, cnctClients[i].PortlessIp)) {
 					newIP = qfalse;
@@ -2490,6 +2498,13 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 			cnctClients[i].numClientsFromIP--;
 			return "You have exceeded max amount of simultaneous connections.";
 		}
+
+		// SpioR - Getting their hostname
+		if(!isBot)
+			MM_GetHostname(client);
+
+		if (!isBot && client->sess.hostname == NULL) 
+			return "Authorizing...";
 	}
 		
 
@@ -4034,6 +4049,11 @@ void ClientSpawn(gentity_t *ent) {
 
 	//Makermod
 	G_Unempower( ent );
+
+	// SpioR - this function is bigger than I thought \
+				I guess here's a good enough place to handle jailed spawning
+	if (ent->client->sess.jailed == qtrue)
+		MM_JailClient(ent, qtrue);
 }
 
 
@@ -4070,9 +4090,6 @@ void ClientDisconnect( int clientNum ) {
 	ClearPlayerRemaps(clientNum);
 	InitPlayerRemaps(clientNum);
 	// [RemapObject] end
-
-	// Unmute
-	ent->muted = qfalse;
 
 	strcpy(PortlessIp,ent->client->sess.ip);
 
@@ -4212,6 +4229,9 @@ void ClientDisconnect( int clientNum ) {
 	ent->client->pers.connected = CON_DISCONNECTED;
 	ent->client->ps.persistant[PERS_TEAM] = TEAM_FREE;
 	ent->client->sess.sessionTeam = TEAM_FREE;
+	ent->client->sess.hostname = NULL; // SpioR - this should do the trick (hopefully)
+	ent->client->sess.muted = qfalse;
+	ent->client->sess.jailed = qfalse;
 	ent->r.contents = 0;
 
 	ent->userinfoChanged = 0;

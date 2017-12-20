@@ -121,7 +121,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	var = va( "session%i", client - level.clients );
 	trap_Cvar_Set( var, s );
 
-	s2 = va("%s %i %i %i %i %i %i %s %s %s",
+	s2 = va("%s %i %i %i %i %i %i %s %i %i %i %s %s",
 		saber2Type,
 //		client->sess.permissions,
 		client->sess.arm,
@@ -131,6 +131,9 @@ void G_WriteClientSessionData( gclient_t *client ) {
 		(int)client->sess.mark[1],
 		(int)client->sess.mark[2],
 		client->sess.ip,
+		client->sess.muted,
+		client->sess.jailed,
+		client->sess.ignore,
 		#ifdef RANKINGMOD
 		client->sess.playerUsername,
 		#endif
@@ -208,7 +211,8 @@ void G_ReadSessionData( gclient_t *client, char *md5sum ) {
 	var2 = va( "session%i_2", client - level.clients );
 	trap_Cvar_VariableStringBuffer( var2, s2, sizeof(s2) );
  
-	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %s %s %s",
+	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i " "%i" " %s %s " "%s", // SpioR - 12th format was %s, should be %i\
+																			also, missed a %s at the end (i hope?)
 		&sessionTeam,                 // bk010221 - format
 		&client->sess.spectatorTime,
 		&spectatorState,              // bk010221 - format
@@ -226,7 +230,7 @@ void G_ReadSessionData( gclient_t *client, char *md5sum ) {
 		&client->sess.saber2Type
 		);
 
-	sscanf( s2, "%s %i %i %i %f %f %f %s %s %s",
+	sscanf( s2, "%s %i %i %i %f %f %f %s %i %i %i %s %s",
 		&client->sess.saber2Type,
 //		&client->sess.permissions,
 		&client->sess.arm,
@@ -236,6 +240,9 @@ void G_ReadSessionData( gclient_t *client, char *md5sum ) {
 		&(client->sess.mark[1]),
 		&(client->sess.mark[2]),
 		&client->sess.ip,
+		&client->sess.muted,
+		&client->sess.jailed,
+		&client->sess.ignore,
 		#ifdef RANKINGMOD
 		&client->sess.playerUsername,
 		#endif
@@ -243,6 +250,23 @@ void G_ReadSessionData( gclient_t *client, char *md5sum ) {
 		md5sum				 // can be blank keep at end
 //		&client->sess.password  // can be blank keep at end
 		);
+
+	byte ip[4] = { 0 };
+	parseIP(client->sess.ip, ip);
+	hostnameCache_t *hs = hostnameCache.next;
+	while (hs)
+	{
+		if (ip[0] == hs->ip[0] &&
+			ip[1] == hs->ip[1] &&
+			ip[2] == hs->ip[2] &&
+			ip[3] == hs->ip[3])
+		{
+			client->sess.hostname = hs->hostname;
+			break;
+		}
+		else
+			hs = hs->next;
+	}
 
 
 	while (client->sess.siegeClass[i])

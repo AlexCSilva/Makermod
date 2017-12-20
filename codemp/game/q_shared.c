@@ -1080,7 +1080,8 @@ char	* QDECL va( const char *format, ... ) {
 
 	return buf;
 }*/
-char    * QDECL va( char *format, ... ) {
+char    * QDECL va( const char *format, ... ) { // SpioR - formal parameter 1 different from declaration
+
         va_list         argptr;
         #define MAX_VA_STRING   32000
         #define MAX_VA_BUFFERS 4

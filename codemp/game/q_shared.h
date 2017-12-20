@@ -3,6 +3,10 @@
 #ifndef __Q_SHARED_H
 #define __Q_SHARED_H
 
+// SpioR - these just spam the Output window
+#pragma warning ( disable : 4010 ) // single-line comment contains line - continuation character
+#pragma warning ( disable : 4091 ) // 'typedef ': ignored on left of '*' when no variable is declared
+
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 

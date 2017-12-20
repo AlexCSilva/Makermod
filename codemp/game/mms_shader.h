@@ -56,6 +56,7 @@ void MM_AddShaderRemap(gentity_t *owner, gentity_t *target, char args[3][1024]);
 void MMS_JoinUpdateAllRemaps(int clientNum);
 void MMS_ClearPlayerRemaps(int playerID);
 void MMS_JoinUpdateRemaps(int clientNum, int playerID);
+void MMS_GetClientVersion(int clientNum); // SpioR - for g_client.c
 
 RemapSettings *FindGroup(int clientNum, gentity_t *target, char *groupName, int *groupCounter, RemapSettings **prev);
 ShaderRemaps *FindRemap(RemapSettings *group, char *remapName, int *remapCounter, ShaderRemaps **prev);
