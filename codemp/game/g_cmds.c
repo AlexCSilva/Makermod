@@ -2,6 +2,8 @@
 //
 #include "g_local.h"
 
+#include <float.h> // for _isnan()
+
 //Scooper - makermod
 #include "makermod.h"
 #include "mms_shader.h"

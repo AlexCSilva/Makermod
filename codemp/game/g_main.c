@@ -570,8 +570,8 @@ qboolean G_EntIsRemovableUsable( int entNum );
 void CP_FindCombatPointWaypoints( void );
 
 //g_crash.c
-void EnableStackTrace();
-void DisableStackTrace();
+//void EnableStackTrace();
+//void DisableStackTrace();
 
 /*
 ================
@@ -589,14 +589,14 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 	switch ( command ) {
 	case GAME_INIT:
 		//[CrashLog]
-		EnableStackTrace();
+		//EnableStackTrace();
 		//[/CrashLog]
 		G_InitGame( arg0, arg1, arg2 );
 		return 0;
 	case GAME_SHUTDOWN:
 		G_ShutdownGame( arg0 );
 		//[CrashLog]
-		DisableStackTrace();
+		//DisableStackTrace();
 		//[/CrashLog]
 		return 0;
 	case GAME_CLIENT_CONNECT:
@@ -781,14 +781,17 @@ int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int a
 
 void QDECL G_Printf( const char *fmt, ... ) {
 	va_list		argptr;
-	char		text[1024];
+	char		text[4096] = {0};
+	int ret;
 
 	va_start (argptr, fmt);
-	// changed to _vsnprintf to prevent buffer overflow
-	_vsnprintf (text, sizeof(text), fmt, argptr);
+	ret = Q_vsnprintf (text, sizeof(text), fmt, argptr);
 	va_end (argptr);
 
-	trap_Printf( text );
+	if ( ret == -1 )
+		trap_Printf( "G_Printf: overflow of 4096 bytes buffer\n" );
+	else
+		trap_Printf( text );
 }
 
 void QDECL G_Error( const char *fmt, ... ) {
