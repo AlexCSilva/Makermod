@@ -14,7 +14,7 @@
 #endif
 
 #ifdef RANKINGMOD
-#include "..\ToastPlayerInfo\ToastPlayerInfo.h"
+#include "../ToastPlayerInfo/ToastPlayerInfo.h"
 
 #endif
 //Makermod v2.0
@@ -17301,6 +17301,18 @@ void ClientCommand( int clientNum ) {
 		{
 			giveError = qtrue;
 		}
+		else if (Q_stricmp (cmd, "mgrapple") == 0)
+        	{
+
+                	if ( !(ent->client->sess.permissions & PERMISSION_TESTING) ) //(!g_cheats.integer) $
+                	{
+                        	MM_SendMessage( ent-g_entities, va("print \"You do not have permission to u$
+                	}
+                	else
+                	{
+                        	TryGrapple(ent);
+                	}
+        	}
 #endif
 		else if (!Q_stricmp(cmd, "mremap"))
 		{
@@ -17350,18 +17362,6 @@ void ClientCommand( int clientNum ) {
 	else if (!Q_stricmp(cmd, "mwrite"))
 	{
 		Cmd_mWrite_f( ent );
-	}
-	else if (Q_stricmp (cmd, "mgrapple") == 0)
-	{
-
-		if ( !(ent->client->sess.permissions & PERMISSION_TESTING) ) //(!g_cheats.integer) &&
-		{
-			MM_SendMessage( ent-g_entities, va("print \"You do not have permission to use this command\n\""));
-		}
-		else
-		{
-			TryGrapple(ent);
-		}
 	}
 	else if (!Q_stricmp(cmd, "mmanipulate"))
 	{
