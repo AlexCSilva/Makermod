@@ -1728,8 +1728,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 #endif
 
 	//Bobafetts fix:
-	if(patchEngine)
-		JKG_PatchEngine();
+	//if(patchEngine)
+		//JKG_PatchEngine();
 	//TestRotateBoundingBoxPatch();
 
 	//Init RMG to 0, it will be autoset to 1 if there is terrain on the level.
@@ -2028,7 +2028,7 @@ void G_ShutdownGame( int restart ) {
 #endif
 
 	//Bobafetts fix:
-	JKG_UnpatchEngine();
+	//JKG_UnpatchEngine();
 
 #ifdef MM_BRUSH
 	MM_S_FreeMemory();
