@@ -8,6 +8,7 @@
 #include "g_public.h"
 //Makermod v2.0
 #include "../qcommon/mm_shared.h"
+#include "openssl/evp.h"
 
 #ifndef __LCC__
 #define GAME_INLINE ID_INLINE
@@ -17,7 +18,9 @@
 
 typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
-typedef	struct npcTypes_s npcTypes_t;
+typedef struct npcTypes_s {
+	char		NPCTypes[64];
+} npcTypes_t;
 typedef struct alloc_s alloc_t;
 
 //npc stuff
@@ -38,7 +41,7 @@ extern vec3_t gPainPoint;
 #endif
 
 // Enable engine patches?
-qboolean patchEngine;
+extern qboolean patchEngine;
 
 
 // Maker Mod Permissions 
@@ -2259,11 +2262,6 @@ struct alloc_s {
 	char		*AllocPointer;
 };*/
 //char		*AllocPointerEfx;
-
-struct npcTypes_s {
-	char		NPCTypes[64];
-};
-
 
 //rww - icarus traps
 int			trap_ICARUS_RunScript( gentity_t *ent, const char *name );

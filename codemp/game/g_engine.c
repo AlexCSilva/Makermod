@@ -27,6 +27,10 @@
 	#define _stricmp strcasecmp
 #endif
 
+qboolean patchEngine = qfalse;
+
+#ifndef NO_ENGINE_PATCH
+
 #ifdef _WIN32
 // Windows defs here
 static void (*NET_OutOfBandPrint)( int sock, netadr_t adr, const char *format, ... ) = (void (*)(int, netadr_t, const char*,...))0x41A230;
@@ -427,6 +431,9 @@ static int JKG_CheckDownloadRequest(int clientNum, client_t *cl, const char *fil
 }
 
 void JKG_PatchEngine() {
+	if ( !patchEngine ) {
+		return;
+	}
 	Com_Printf(" ------- Installing Engine Patches -------- \n");
 	
 	pIBFix = JKG_PlacePatch(PATCH_CALL, _IBFIX_PATCHPOS, (unsigned int)_Hook_InfoBoomFix()); // We'll be overwriting a call here

@@ -16,7 +16,7 @@
 #endif
 
 #ifdef RANKINGMOD
-#include "..\ToastPlayerInfo\ToastPlayerInfo.h"
+#include "../ToastPlayerInfo/ToastPlayerInfo.h"
 #endif
 
 level_locals_t	level;
